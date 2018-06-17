@@ -12,9 +12,9 @@ files = os.listdir(path1)
 for i in files:
     with open(path1+i, 'r') as file:
         tmp = json.load(file)
-    for j in tmp:
+    for j in range(len(tmp)):
         for key in labels:
-            if key not in j:
-                j[key] = ''
+            if key not in tmp[j]:
+                tmp[j][key] = ''
     with open(path2+i, 'w') as file:
         json.dump(tmp, file)

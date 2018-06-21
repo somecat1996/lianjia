@@ -9,7 +9,7 @@ import os
 import re
 
 
-__all__ = ['dataset', 'JSONEncoder', 'object_hook']
+__all__ = ['dataset']
 
 
 DIVISION_CODE = {
@@ -212,6 +212,68 @@ def object_hook(obj):
     return obj
 
 
+class Dataset(tuple):
+    """Make tuple-like datasets.
+
+    # returns from `dataset` function
+    >>> data = dataset()
+    # subscriptable as normal tuples
+    >>> data[0]
+    >>> data[1:10]
+    # or to fetch certain keys
+    >>> data[1, 'apt', 'lift']
+    >>> data[1:3, 'price', 'average']
+
+    """
+    def __getitem__(self, key, *args):
+        if isinstance(key, tuple):
+            args = tuple(key[1:])
+            key = key[0]
+        if isinstance(key, str):
+            return self.__getitem_slice__(slice(None, None, None), *((key,) + args))
+        elif isinstance(key, int):
+            return self.__getitem_slice__(slice(key, key+1, None), *args)
+        elif isinstance(key, slice):
+            return self.__getitem_slice__(key, *args)
+        else:
+            raise IndexError('Dataset index out of range')
+
+    def __getitem_slice__(self, key, *args):
+        temp = super().__getitem__(key)
+        if args == tuple():
+            return temp[0] if len(temp) == 1 else temp
+
+        info = collections.defaultdict(list)
+        for item in temp:
+            retd = self.__getitem_str__(item, *args)
+            for key, value in retd.items():
+                info[key].append(value)
+        for key, value in info.items():
+            info[key] = tuple(value)
+        return Info(info)
+
+    def __getitem_str__(self, item, *args):
+        temp = dict()
+        for arg in args:
+            if arg in ('name', 'intro'):
+                temp[arg] = item.community[arg]
+            elif arg in ('district', 'station', 'ring'):
+                temp[arg] = item.region[arg]
+            elif arg in ('room', 'saloon', 'kitchen', 'bath'):
+                temp[arg] = item.type[arg]
+            elif arg in ('level', 'total'):
+                temp[arg] = item.floor[arg]
+            elif arg in ('condition', 'description'):
+                temp[arg] = item.decoration[arg]
+            elif arg in ('lift', 'apt'):
+                temp[arg] = item.ratio[arg]
+            elif arg in ('flag', 'info', 'comment'):
+                temp[arg] = item.mortgage[arg]
+            else:
+                temp[arg] = item[arg]
+        return temp
+
+
 class Info(dict):
     """Turn dictionaries into object-like instances.
 
@@ -368,10 +430,10 @@ def parse_ratio(ratio):
         return sum_ if char in ('十',) else (sum_ + temp)
     match = RATIO_FORMAT.match(ratio)
     if match is None:
-        return dict(list=0, room=0)
+        return dict(list=0, apt=0)
     return dict(
         lift = convert(match.group('lift')),
-        room = convert(match.group('room')),
+        apt = convert(match.group('room')),
     )
 
 
@@ -451,8 +513,9 @@ def load(*, path='./dataset'):
         if os.path.splitext(file)[1] != '.json':    continue
         with open(f'{path}/{file}', 'r') as load_file:
             data = json.load(load_file, object_hook=object_hook)
-        dataset.extend(data)
-    return tuple(dataset)
+        for item in data:
+            dataset.append(Info(item))
+    return Dataset(dataset)
 
 
 def dump(*, src='./data2', dst='./dataset'):
@@ -465,11 +528,11 @@ def dump(*, src='./data2', dst='./dataset'):
         with open(f'{dst}/{file}', 'w') as dump_file:
             json.dump(temp, dump_file, cls=JSONEncoder)
         dataset.extend(temp)
-    return tuple(dataset)
+    return Dataset(dataset)
 
 
-def dataset(*, src='./data2', dst='./dataset', dump=False):
-    if dump:
+def dataset(*, src='./data2', dst='./dataset', load_from_source=False):
+    if load_from_source:
         return dump(src=src, dst=dst)
     return load(path=dst)
     

@@ -7,6 +7,7 @@ import dateutil.parser
 import json
 import os
 import re
+import warnings
 
 
 __all__ = ['dataset']
@@ -255,7 +256,7 @@ class Dataset(tuple):
     def __getitem_str__(self, item, *args):
         temp = dict()
         for arg in args:
-            if arg in ('name', 'intro'):
+            if arg in ('name', 'intro', 'coordinate'):
                 temp[arg] = item.community[arg]
             elif arg in ('district', 'station', 'ring'):
                 temp[arg] = item.region[arg]
@@ -518,7 +519,7 @@ def load(*, path='./dataset'):
     return Dataset(dataset)
 
 
-def dump(*, src='./data2', dst='./dataset'):
+def dump(*, src='./data2', dst='./dataset2'):
     dataset = list()
     for file in os.listdir(src):
         if os.path.splitext(file)[1] != '.json':    continue
@@ -531,9 +532,11 @@ def dump(*, src='./data2', dst='./dataset'):
     return Dataset(dataset)
 
 
-def dataset(*, src='./data2', dst='./dataset', load_from_source=False):
+def dataset(*, src='./data2', dst='./dataset2', load_from_source=False):
     if load_from_source:
-        return dump(src=src, dst=dst)
+        warnings.filterwarnings('default')
+        warnings.warn('load_from_source is deprecated; directly load dataset', DeprecationWarning)
+        # return dump(src=src, dst=dst)
     return load(path=dst)
     
 

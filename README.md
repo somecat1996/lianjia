@@ -25,6 +25,7 @@ dataset(*, src='./data2', dst='./dataset', load_from_source=False)
             |-- (Info) community -- 小区
             |       |-- (str) name -- 小区名称
             |       |-- (str) intro -- 小区介绍
+            |       |-- (tuple<float>) coordinate -- 小区坐标
             |-- (Info) region -- 所在区域
             |       |-- (int) district -- 行政区划编码
             |       |-- (str) station -- 所处地铁站辐射区
@@ -75,6 +76,13 @@ dataset(*, src='./data2', dst='./dataset', load_from_source=False)
         ```
 
     - Terminology:
+        * `coordinate` (小区坐标):
+            ```python
+            (
+                0.0,    # 经度
+                0.0,    # 纬度
+            )
+            ```
         * `district` (行政区划编码):
             ```python
             DIVISION_CODE = {

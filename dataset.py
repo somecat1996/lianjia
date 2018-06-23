@@ -3,13 +3,21 @@
 
 import collections
 import datetime
-import dateutil.parser
 import json
 import os
+import pathlib
 import re
 import warnings
 
+import dateutil.parser
+
+
 __all__ = ['dataset']
+
+
+with open(os.path.join(os.path.split(os.path.abspath(__file__))[0],
+            './POI_COMMUNITY_SH/community0.txt')) as file:
+    COMMUNITY = json.load(file)
 
 DIVISION_CODE = {
     '黄埔': 310101,
@@ -133,6 +141,15 @@ CHINESE_ARABIC = {
     '八': 8,
     '九': 9,
     '十': 10,
+}
+
+POI_DICT = {    # 购物 教育 交通 健身 环境 医疗
+    0 : ['购物','市场','商场','商铺','巴黎春天','卜蜂莲花','大润发','乐购'],
+    1 : ['学校','学区','幼儿园','小学','中学','大学'],
+    2 : ['号线','地铁','公交','车站'],
+    3 : ['健身','球场','游泳'],
+    4 : ['公园','绿化'],
+    5 : ['医'],
 }
 
 HOUSE_TYPE = re.compile(r'''
@@ -345,9 +362,18 @@ def parse_price(price, unit):
 
 
 def parse_community(name, intro):
+    temp = re.split(r'\(|\uff08', (name or '').strip())[0]
+
+    coordinate = tuple()
+    for community in COMMUNITY:
+        if temp in community:
+            coordinate = tuple(COMMUNITY[community])
+            break
+
     return dict(
         name=(name or '').strip() or None,
         intro=(intro or '').strip() or None,
+        coordinate=coordinate,
     )
 
 
@@ -446,6 +472,17 @@ def parse_tags(tags):
     return tuple(ret)
 
 
+def parse_facility(facility):
+    desc = str(facility or '').strip()
+    temp = [0, 0, 0, 0, 0, 0]
+    for index, POI in POI_DICT.items():
+        for keyword in POI:
+            if keyword in desc:
+                temp[index] = 1
+                break
+    return tuple(temp)
+
+
 def parse(data):
     report = list()
     for item in data:
@@ -486,7 +523,7 @@ def parse(data):
             suitable=(item['适宜人群'] or '').strip() or None,
             villa=VILLA_TYPE.get((item['别墅类型'] or '').strip(), -1),
             analysis=(item['投资分析'] or '').strip() or None,
-            facility=(item['周边配套'] or '').strip() or None
+            facility=parse_facility(item['周边配套']),
         )
         report.append(Info(temp))
     return tuple(report)
@@ -504,6 +541,8 @@ def load(*, path='./dataset'):
 
 
 def dump(*, src='./data2', dst='./dataset2'):
+    pathlib.Path(dst).mkdir(exist_ok=True, parents=True)
+
     dataset = list()
     for file in os.listdir(src):
         if os.path.splitext(file)[1] != '.json':    continue
@@ -511,60 +550,23 @@ def dump(*, src='./data2', dst='./dataset2'):
             data = json.load(load_file, object_hook=object_hook)
             temp = parse(data)
         with open(f'{dst}/{file}', 'w') as dump_file:
+            print(dump_file.name)
             json.dump(temp, dump_file, cls=JSONEncoder)
         dataset.extend(temp)
     return Dataset(dataset)
 
 
-def dataset(*, src='./data2', dst='./dataset2', load_from_source=False):
+def dataset(*, src='./data2', dst='./dataset3', load_from_source=False):
     if load_from_source:
         warnings.filterwarnings('default')
-        warnings.warn('load_from_source is deprecated; directly load dataset', DeprecationWarning)
+        warnings.warn('load_from_source is deprecated; '
+                        'directly load dataset instead', DeprecationWarning, stacklevel=2)
         # return dump(src=src, dst=dst)
     return load(path=dst)
 
 
-'''if __name__ == '__main__':
+if __name__ == '__main__':
     import pprint, sys
 
     pprint.pprint(dataset())
-    sys.exit(0)'''
-
-def facility_process():
-    data=dataset()
-    facility_dict={}
-    for item in data:
-        facility_description=str(item['facility'])
-        id=item['id']
-        POI_class={
-             '购物':0,
-            '教育':1,
-            '交通':2,
-            '健身':3,
-            '环境':4,
-            '医疗':5
-
-        }
-
-        POI_dict={
-            '购物':['购物','市场','商场','商铺','巴黎春天','卜蜂莲花','大润发','乐购'],
-            '教育':['学校','学区','幼儿园','小学','中学','大学'],
-            '交通':['号线','地铁','公交','车站'],
-            '健身':['健身','球场','游泳'],
-            '环境':['公园','绿化'],
-            '医疗':['医']
-        }
-
-
-        k=0
-        temp = [0, 0, 0, 0, 0, 0]
-
-        for POI in POI_class.keys():
-            for keyword in POI_dict[POI]:
-                if keyword in facility_description :
-                    temp[k]=1
-                    break
-            k=k+1
-
-        facility_dict[id]=temp
-    return facility_dict
+    sys.exit(0)

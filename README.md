@@ -65,7 +65,7 @@ dataset(*, src='./data2', dst='./dataset', load_from_source=False)
             |-- (int) deed -- 房本备件
             |-- (tuple<int>) tags -- 房源标签
             |-- (str) intro -- 房源标签
-            |-- (str) facility -- 周边配套
+            |-- (tuple<int>) facility -- 周边配套
             |-- (str) inspiration -- 核心卖点
             |-- (str) transport -- 交通出行
             |-- (str) detail -- 售房详情
@@ -212,6 +212,17 @@ dataset(*, src='./data2', dst='./dataset', load_from_source=False)
                 0,  # 房本满五年
                 0,  # 随时看房
                 0,  # 地铁
+            )
+            ```
+        * `facility` (周边配套):
+            ```python
+            (
+                0,  # 购物：购物, 市场, 商场, 商铺, 巴黎春天, 卜蜂莲花, 大润发, 乐购
+                0,  # 教育：学校, 学区, 幼儿园, 小学, 中学, 大学
+                0,  # 交通：号线, 地铁, 公交, 车站
+                0,  # 健身：健身, 球场, 游泳
+                0,  # 环境：公园, 绿化
+                0,  # 医疗：医
             )
             ```
         * `villa` (别墅类型):

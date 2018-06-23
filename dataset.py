@@ -9,89 +9,78 @@ import os
 import re
 import warnings
 
-
 __all__ = ['dataset']
 
-
 DIVISION_CODE = {
-    '黄埔' : 310101,
-    '徐汇' : 310104,
-    '长宁' : 310105,
-    '静安' : 310106,
-    '普陀' : 310107,
-    '虹口' : 310109,
-    '杨浦' : 310110,
-    '闵行' : 310112,
-    '宝山' : 310113,
-    '嘉定' : 310114,
-    '浦东' : 310115,
-    '金山' : 310116,
-    '松江' : 310117,
-    '青浦' : 310118,
-    '奉贤' : 310120,
-    '崇明' : 310151,
+    '黄埔': 310101,
+    '徐汇': 310104,
+    '长宁': 310105,
+    '静安': 310106,
+    '普陀': 310107,
+    '虹口': 310109,
+    '杨浦': 310110,
+    '闵行': 310112,
+    '宝山': 310113,
+    '嘉定': 310114,
+    '浦东': 310115,
+    '金山': 310116,
+    '松江': 310117,
+    '青浦': 310118,
+    '奉贤': 310120,
+    '崇明': 310151,
 }
-
 
 FLOOR_LEVEL = {
-    '低' : 0,
-    '中' : 1,
-    '高' : 2,
-    '地下室' : 4,
+    '低': 0,
+    '中': 1,
+    '高': 2,
+    '地下室': 4,
 }
-
 
 STRUCTURE_CODE = {
-    '复式' : 0,
-    '平层' : 1,
-    '跃层' : 2,
-    '错层' : 3,
+    '复式': 0,
+    '平层': 1,
+    '跃层': 2,
+    '错层': 3,
 }
-
 
 BUILDING_TYPE = {
-    '塔楼' : 0,
-    '板楼' : 1,
+    '塔楼': 0,
+    '板楼': 1,
 }
-
 
 ORIENTATION_CODE = {
-    '东' : 0,
-    '南' : 2,
-    '西' : 4,
-    '北' : 6,
-    '东南' : 1,
-    '西南' : 3,
-    '西北' : 5,
-    '东北' : 7,
+    '东': 0,
+    '南': 2,
+    '西': 4,
+    '北': 6,
+    '东南': 1,
+    '西南': 3,
+    '西北': 5,
+    '东北': 7,
 }
-
 
 FRAMEWORK_CODE = {
-    '砖混结构' : 0,
-    '钢混结构' : 1,
+    '砖混结构': 0,
+    '钢混结构': 1,
 }
-
 
 CONDITION_CODE = {
-    '毛坯' : 0,
-    '简装' : 1,
-    '精装' : 2,
+    '毛坯': 0,
+    '简装': 1,
+    '精装': 2,
 }
-
 
 ELEVATOR_CODE = {
-    '无' : 0,
-    '有' : 1,
+    '无': 0,
+    '有': 1,
 }
-
 
 TRADING_RIGHTS = {
-    '动迁安置房' : 0,
-    '售后公房' : 1,
-    '商品房' : 2,
+    '动迁安置房': 0,
+    '售后公房': 1,
+    '商品房': 2,
 }
-
 
 PURPOSE_CODE = {
     '别墅': 0,
@@ -102,25 +91,21 @@ PURPOSE_CODE = {
     '花园洋房': 5,
 }
 
-
 HOUSE_TERM = {
     '未满两年': 0,
     '满两年': 1,
     '满五年': 2,
 }
 
-
 PROPERTY_OWNERSHIP = {
-    '非共有' : 0,
-    '共有' : 1,
+    '非共有': 0,
+    '共有': 1,
 }
-
 
 DEED_CODE = {
-    '未上传房本照片' : 0,
-    '已上传房本照片' : 1,
+    '未上传房本照片': 0,
+    '已上传房本照片': 1,
 }
-
 
 VILLA_TYPE = {
     '联排': 0,
@@ -129,7 +114,6 @@ VILLA_TYPE = {
     '叠拼': 3,
 }
 
-
 TAG_CODE = {
     '房本满两年': 0,
     '房本满五年': 1,
@@ -137,21 +121,19 @@ TAG_CODE = {
     '地铁': 3,
 }
 
-
 CHINESE_ARABIC = {
-    '一' : 1,
-    '二' : 2,
-    '两' : 2,
-    '三' : 3,
-    '四' : 4,
-    '五' : 5,
-    '六' : 6,
-    '七' : 7,
-    '八' : 8,
-    '九' : 9,
-    '十' : 10,
+    '一': 1,
+    '二': 2,
+    '两': 2,
+    '三': 3,
+    '四': 4,
+    '五': 5,
+    '六': 6,
+    '七': 7,
+    '八': 8,
+    '九': 9,
+    '十': 10,
 }
-    
 
 HOUSE_TYPE = re.compile(r'''
     \A\s*                       # optional whitespace at the start, then
@@ -166,7 +148,6 @@ HOUSE_TYPE = re.compile(r'''
     \s*\Z                       # and optional whitespace to finish
 ''', re.IGNORECASE | re.VERBOSE)
 
-
 FLOOR_FORMAT = re.compile(r'''
     \A\s*                       # optional whitespace at the start, then
     (?P<level>\w*)?             # level of this floor, then
@@ -178,7 +159,6 @@ FLOOR_FORMAT = re.compile(r'''
     (?:\u5c42\u0029)            # followed by character “层” and right bracket, then
     \s*\Z                       # and optional whitespace to finish
 ''', re.IGNORECASE | re.VERBOSE)
-
 
 RATIO_FORMAT = re.compile(r'''
     \A\s*                       # optional whitespace at the start, then
@@ -226,6 +206,7 @@ class Dataset(tuple):
     >>> data[1:3, 'price', 'average']
 
     """
+
     def __getitem__(self, key, *args):
         if isinstance(key, tuple):
             args = tuple(key[1:])
@@ -233,7 +214,7 @@ class Dataset(tuple):
         if isinstance(key, str):
             return self.__getitem_slice__(slice(None, None, None), *((key,) + args))
         elif isinstance(key, int):
-            return self.__getitem_slice__(slice(key, key+1, None), *args)
+            return self.__getitem_slice__(slice(key, key + 1, None), *args)
         elif isinstance(key, slice):
             return self.__getitem_slice__(key, *args)
         else:
@@ -288,6 +269,7 @@ class Info(dict):
             attributes after initialisation
 
     """
+
     def __new__(cls, dict_=None, **kwargs):
         def __read__(dict_):
             __dict__ = dict()
@@ -364,8 +346,8 @@ def parse_price(price, unit):
 
 def parse_community(name, intro):
     return dict(
-        name = (name or '').strip() or None,
-        intro = (intro or '').strip() or None,
+        name=(name or '').strip() or None,
+        intro=(intro or '').strip() or None,
     )
 
 
@@ -373,9 +355,9 @@ def parse_region(region):
     temp = (region or '').strip().split()
     if len(temp) in (2, 3):
         return dict(
-            district = DIVISION_CODE.get(temp[0], 310000),
-            station = temp[1],
-            ring = temp[2] if len(temp) == 3 else None,
+            district=DIVISION_CODE.get(temp[0], 310000),
+            station=temp[1],
+            ring=temp[2] if len(temp) == 3 else None,
         )
     return dict(district=None, station=None, ring=None)
 
@@ -385,10 +367,10 @@ def parse_type(htype):
     if match is None:
         raise ParseError(f'illegal house type {htype}')
     return dict(
-        room = int(match.group('room')),
-        saloon = int(match.group('saloon')),
-        kitchen = int(match.group('kitchen')),
-        bath = int(match.group('bath')),
+        room=int(match.group('room')),
+        saloon=int(match.group('saloon')),
+        kitchen=int(match.group('kitchen')),
+        bath=int(match.group('bath')),
     )
 
 
@@ -397,14 +379,14 @@ def parse_floor(floor):
     if match is None:
         raise ParseError(f'illegal floor discription {floor}')
     return dict(
-        level = FLOOR_LEVEL.get(match.group('level') or '地下室', -1),
-        total = int(match.group('total')),
+        level=FLOOR_LEVEL.get(match.group('level') or '地下室', -1),
+        total=int(match.group('total')),
     )
 
 
 def parse_orientation(orientation):
     temp = (orientation or '').strip().split()
-    ret = [ 0 for _ in range(8) ]
+    ret = [0 for _ in range(8)]
     for desc in temp:
         index = ORIENTATION_CODE.get(desc)
         if index is None:
@@ -415,8 +397,8 @@ def parse_orientation(orientation):
 
 def parse_decoration(condition, description):
     return dict(
-        condition = CONDITION_CODE.get(condition, -1),
-        description = (description or '').strip() or None,
+        condition=CONDITION_CODE.get(condition, -1),
+        description=(description or '').strip() or None,
     )
 
 
@@ -427,14 +409,16 @@ def parse_ratio(ratio):
         for char in string:
             temp *= CHINESE_ARABIC[char]
             if char in ('十',):
-                sum_ += temp;   temp = 1
+                sum_ += temp;
+                temp = 1
         return sum_ if char in ('十',) else (sum_ + temp)
+
     match = RATIO_FORMAT.match(ratio)
     if match is None:
         return dict(list=0, apt=0)
     return dict(
-        lift = convert(match.group('lift')),
-        apt = convert(match.group('room')),
+        lift=convert(match.group('lift')),
+        apt=convert(match.group('room')),
     )
 
 
@@ -445,15 +429,15 @@ def parse_time(time):
 
 def parse_mortgage(mortgage, ownership):
     return dict(
-        flag = bool(mortgage),
-        info = tuple((mortgage or '').strip().split()) if mortgage else None,
-        comment = (ownership or '').strip() or None,
+        flag=bool(mortgage),
+        info=tuple((mortgage or '').strip().split()) if mortgage else None,
+        comment=(ownership or '').strip() or None,
     )
 
 
 def parse_tags(tags):
     temp = (tags or '').strip().split()
-    ret = [ 0 for _ in range(4) ]
+    ret = [0 for _ in range(4)]
     for tag in temp:
         index = TAG_CODE.get(tag)
         if index is None:
@@ -466,43 +450,43 @@ def parse(data):
     report = list()
     for item in data:
         temp = dict(
-            id = int(item['ID']),
-            title = (item['标题'] or '').strip() or None,
-            heading = (item['副标题'] or '').strip() or None,
-            price = parse_price(item['总价'], item['总价单位']),
-            average = float((item['均价'] or '').strip('元/平米') or 0),
-            community = parse_community(item['小区名称'], item['小区介绍']),
-            region = parse_region(item['所在区域']),
-            type = parse_type(item['房屋户型']),
-            floor = parse_floor(item['所在楼层']),
-            scale = float((item['建筑面积'] or '').strip('㎡').replace('暂无数据', '') or 0),
-            structure = STRUCTURE_CODE.get((item['户型结构'] or '').strip(), -1),
-            area = float((item['套内面积'] or '').strip('㎡').replace('暂无数据', '') or 0),
-            building = BUILDING_TYPE.get((item['建筑类型'] or '').strip(), -1),
-            orientation = parse_orientation(item['房屋朝向']),
-            framework = FRAMEWORK_CODE.get((item['建筑结构'] or '').strip(), -1),
-            decoration = parse_decoration(item['装修情况'], item['装修描述']),
-            ratio = parse_ratio(item['梯户比例']),
-            elevator = ELEVATOR_CODE.get((item['配备电梯'] or '').strip(), -1),
-            title_term = int(re.split('未知|年', item['产权年限'])[0] or 0),
-            listing_time = parse_time(item['挂牌时间']),
-            rights = TRADING_RIGHTS.get((item['交易权属'] or '').strip(), -1),
-            last_transaction = parse_time(item['上次交易']),
-            purpose = PURPOSE_CODE.get((item['房屋用途'] or '').strip(), -1),
-            house_term = HOUSE_TERM.get((item['房屋年限'] or '').strip(), -1),
-            ownership = PROPERTY_OWNERSHIP.get((item['产权所属'] or ''), -1),
-            mortgage = parse_mortgage(item['抵押信息'], item['权属抵押']),
-            deed = DEED_CODE.get((item['房本备件'] or '').strip(), -1),
-            tags = parse_tags(item['房源标签']),
-            intro = (item['户型介绍'] or '').strip() or None,
-            facility = (item['周边配套'] or '').strip() or None,
-            inspiration = (item['核心卖点'] or '').strip() or None,
-            transport = (item['交通出行'] or '').strip() or None,
-            details = (item['售房详情'] or '').strip() or None,
-            tax = (item['税费解析'] or '').strip() or None,
-            suitable = (item['适宜人群'] or '').strip() or None,
-            villa = VILLA_TYPE.get((item['别墅类型'] or '').strip(), -1),
-            analysis = (item['投资分析'] or '').strip() or None,
+            id=int(item['ID']),
+            title=(item['标题'] or '').strip() or None,
+            heading=(item['副标题'] or '').strip() or None,
+            price=parse_price(item['总价'], item['总价单位']),
+            average=float((item['均价'] or '').strip('元/平米') or 0),
+            community=parse_community(item['小区名称'], item['小区介绍']),
+            region=parse_region(item['所在区域']),
+            type=parse_type(item['房屋户型']),
+            floor=parse_floor(item['所在楼层']),
+            scale=float((item['建筑面积'] or '').strip('㎡').replace('暂无数据', '') or 0),
+            structure=STRUCTURE_CODE.get((item['户型结构'] or '').strip(), -1),
+            area=float((item['套内面积'] or '').strip('㎡').replace('暂无数据', '') or 0),
+            building=BUILDING_TYPE.get((item['建筑类型'] or '').strip(), -1),
+            orientation=parse_orientation(item['房屋朝向']),
+            framework=FRAMEWORK_CODE.get((item['建筑结构'] or '').strip(), -1),
+            decoration=parse_decoration(item['装修情况'], item['装修描述']),
+            ratio=parse_ratio(item['梯户比例']),
+            elevator=ELEVATOR_CODE.get((item['配备电梯'] or '').strip(), -1),
+            title_term=int(re.split('未知|年', item['产权年限'])[0] or 0),
+            listing_time=parse_time(item['挂牌时间']),
+            rights=TRADING_RIGHTS.get((item['交易权属'] or '').strip(), -1),
+            last_transaction=parse_time(item['上次交易']),
+            purpose=PURPOSE_CODE.get((item['房屋用途'] or '').strip(), -1),
+            house_term=HOUSE_TERM.get((item['房屋年限'] or '').strip(), -1),
+            ownership=PROPERTY_OWNERSHIP.get((item['产权所属'] or ''), -1),
+            mortgage=parse_mortgage(item['抵押信息'], item['权属抵押']),
+            deed=DEED_CODE.get((item['房本备件'] or '').strip(), -1),
+            tags=parse_tags(item['房源标签']),
+            intro=(item['户型介绍'] or '').strip() or None,
+            inspiration=(item['核心卖点'] or '').strip() or None,
+            transport=(item['交通出行'] or '').strip() or None,
+            details=(item['售房详情'] or '').strip() or None,
+            tax=(item['税费解析'] or '').strip() or None,
+            suitable=(item['适宜人群'] or '').strip() or None,
+            villa=VILLA_TYPE.get((item['别墅类型'] or '').strip(), -1),
+            analysis=(item['投资分析'] or '').strip() or None,
+            facility=(item['周边配套'] or '').strip() or None
         )
         report.append(Info(temp))
     return tuple(report)
@@ -538,9 +522,49 @@ def dataset(*, src='./data2', dst='./dataset2', load_from_source=False):
         warnings.warn('load_from_source is deprecated; directly load dataset', DeprecationWarning)
         # return dump(src=src, dst=dst)
     return load(path=dst)
-    
 
-if __name__ == '__main__':
+
+'''if __name__ == '__main__':
     import pprint, sys
+
     pprint.pprint(dataset())
-    sys.exit(0)
+    sys.exit(0)'''
+
+def facility_process():
+    data=dataset()
+    facility_dict={}
+    for item in data:
+        facility_description=str(item['facility'])
+        id=item['id']
+        POI_class={
+             '购物':0,
+            '教育':1,
+            '交通':2,
+            '健身':3,
+            '环境':4,
+            '医疗':5
+
+        }
+
+        POI_dict={
+            '购物':['购物','市场','商场','商铺','巴黎春天','卜蜂莲花','大润发','乐购'],
+            '教育':['学校','学区','幼儿园','小学','中学','大学'],
+            '交通':['号线','地铁','公交','车站'],
+            '健身':['健身','球场','游泳'],
+            '环境':['公园','绿化'],
+            '医疗':['医']
+        }
+
+
+        k=0
+        temp = [0, 0, 0, 0, 0, 0]
+
+        for POI in POI_class.keys():
+            for keyword in POI_dict[POI]:
+                if keyword in facility_description :
+                    temp[k]=1
+                    break
+            k=k+1
+
+        facility_dict[id]=temp
+    return facility_dict

@@ -563,9 +563,9 @@ def dump(*, src='./data2', dst='./dataset3'):
 def dataset(*, src='./data2', dst='./dataset3', load_from_source=False):
     if load_from_source:
         warnings.filterwarnings('default')
-        warnings.warn('load_from_source is deprecated; '
-                      'directly load dataset instead', DeprecationWarning, stacklevel=2)
-        # return dump(src=src, dst=dst)
+        warnings.warn('load_from_source is to be deprecated; '
+                      'directly load dataset instead', PendingDeprecationWarning, stacklevel=2)
+        return dump(src=src, dst=dst)
     return load(path=dst)
 
 

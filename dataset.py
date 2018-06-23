@@ -16,7 +16,7 @@ __all__ = ['dataset']
 
 
 with open(os.path.join(os.path.split(os.path.abspath(__file__))[0],
-            './POI_COMMUNITY_SH/community0.txt')) as file:
+                       './POI_COMMUNITY_SH/community0.txt')) as file:
     COMMUNITY = json.load(file)
 
 DIVISION_CODE = {
@@ -144,12 +144,12 @@ CHINESE_ARABIC = {
 }
 
 POI_DICT = {    # 购物 教育 交通 健身 环境 医疗
-    0 : ['购物','市场','商场','商铺','巴黎春天','卜蜂莲花','大润发','乐购'],
-    1 : ['学校','学区','幼儿园','小学','中学','大学'],
-    2 : ['号线','地铁','公交','车站'],
-    3 : ['健身','球场','游泳'],
-    4 : ['公园','绿化'],
-    5 : ['医'],
+    0: ['购物', '市场', '商场', '商铺', '巴黎春天', '卜蜂莲花', '大润发', '乐购'],
+    1: ['学校', '学区', '幼儿园', '小学', '中学', '大学'],
+    2: ['号线', '地铁', '公交', '车站'],
+    3: ['健身', '球场', '游泳'],
+    4: ['公园', '绿化'],
+    5: ['医'],
 }
 
 HOUSE_TYPE = re.compile(r'''
@@ -435,7 +435,7 @@ def parse_ratio(ratio):
         for char in string:
             temp *= CHINESE_ARABIC[char]
             if char in ('十',):
-                sum_ += temp;
+                sum_ += temp
                 temp = 1
         return sum_ if char in ('十',) else (sum_ + temp)
 
@@ -496,9 +496,11 @@ def parse(data):
             region=parse_region(item['所在区域']),
             type=parse_type(item['房屋户型']),
             floor=parse_floor(item['所在楼层']),
-            scale=float((item['建筑面积'] or '').strip('㎡').replace('暂无数据', '') or 0),
+            scale=float((item['建筑面积'] or '').strip(
+                '㎡').replace('暂无数据', '') or 0),
             structure=STRUCTURE_CODE.get((item['户型结构'] or '').strip(), -1),
-            area=float((item['套内面积'] or '').strip('㎡').replace('暂无数据', '') or 0),
+            area=float((item['套内面积'] or '').strip(
+                '㎡').replace('暂无数据', '') or 0),
             building=BUILDING_TYPE.get((item['建筑类型'] or '').strip(), -1),
             orientation=parse_orientation(item['房屋朝向']),
             framework=FRAMEWORK_CODE.get((item['建筑结构'] or '').strip(), -1),
@@ -529,10 +531,11 @@ def parse(data):
     return tuple(report)
 
 
-def load(*, path='./dataset'):
+def load(*, path='./dataset3'):
     dataset = list()
     for file in os.listdir(path):
-        if os.path.splitext(file)[1] != '.json':    continue
+        if os.path.splitext(file)[1] != '.json':
+            continue
         with open(f'{path}/{file}', 'r') as load_file:
             data = json.load(load_file, object_hook=object_hook)
         for item in data:
@@ -540,12 +543,13 @@ def load(*, path='./dataset'):
     return Dataset(dataset)
 
 
-def dump(*, src='./data2', dst='./dataset2'):
+def dump(*, src='./data2', dst='./dataset3'):
     pathlib.Path(dst).mkdir(exist_ok=True, parents=True)
 
     dataset = list()
     for file in os.listdir(src):
-        if os.path.splitext(file)[1] != '.json':    continue
+        if os.path.splitext(file)[1] != '.json':
+            continue
         with open(f'{src}/{file}', 'r') as load_file:
             data = json.load(load_file, object_hook=object_hook)
             temp = parse(data)
@@ -560,13 +564,14 @@ def dataset(*, src='./data2', dst='./dataset3', load_from_source=False):
     if load_from_source:
         warnings.filterwarnings('default')
         warnings.warn('load_from_source is deprecated; '
-                        'directly load dataset instead', DeprecationWarning, stacklevel=2)
+                      'directly load dataset instead', DeprecationWarning, stacklevel=2)
         # return dump(src=src, dst=dst)
     return load(path=dst)
 
 
 if __name__ == '__main__':
-    import pprint, sys
+    import pprint
+    import sys
 
     pprint.pprint(dataset())
     sys.exit(0)

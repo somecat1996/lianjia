@@ -373,7 +373,7 @@ def parse_community(name, intro):
     return dict(
         name=(name or '').strip() or None,
         intro=(intro or '').strip() or None,
-        coordinate=coordinate,
+        coordinate=coordinate or None,
     )
 
 
@@ -554,7 +554,7 @@ def dump(*, src='./data2', dst='./dataset3'):
             data = json.load(load_file, object_hook=object_hook)
             temp = parse(data)
         with open(f'{dst}/{file}', 'w') as dump_file:
-            print(dump_file.name)
+            # print(dump_file.name)
             json.dump(temp, dump_file, cls=JSONEncoder)
         dataset.extend(temp)
     return Dataset(dataset)
@@ -573,5 +573,13 @@ if __name__ == '__main__':
     import pprint
     import sys
 
+    # ds = dataset()
+    # dsd = ds['facility', 'coordinate']
+    # print(ds['coordinate'])
+    # print(len(ds), 'records in total')
+    # print(ds['coordinate'].coordinate)
+    # print(list(filter(lambda x: bool(x), ds['coordinate'].coordinate)))
+    # print(len(list(filter(lambda x: bool(x), dsd.coordinate))), 'records with coordinate')
+    # print(len(list(filter(lambda x: bool(x), dsd.facility))), 'records with facility')
     pprint.pprint(dataset())
     sys.exit(0)
